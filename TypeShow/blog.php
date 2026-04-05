@@ -6,9 +6,10 @@
  */
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
-$pageSize = (int) $this->options->pageSize ?: 10;
-$posts    = \Widget\Archive::allocWithAlias('blog-list', ['type' => 'index', 'pageSize' => $pageSize]);
-$allCats  = \Widget\Metas\Category\Rows::alloc();
+$pageSize   = (int) $this->options->pageSize ?: 10;
+$currentPage = max(1, (int) $this->request->filter('int')->get('page', 1));
+$posts      = \Widget\Archive::allocWithAlias('blog-list', ['type' => 'index', 'pageSize' => $pageSize, 'page' => $currentPage]);
+$allCats    = \Widget\Metas\Category\Rows::alloc();
 
 $this->need('header.php');
 ?>
@@ -81,10 +82,30 @@ $this->need('header.php');
                         <?php endwhile; ?>
                     </div>
 
-                    <?php $posts->pageNav('←', '→', 1, '...', [
-                        'wrapTag'   => 'nav',
-                        'wrapClass' => 'ts-blog-pagination',
-                    ]); ?>
+                    <?php
+                    $total   = $posts->getTotal();
+                    $totalPage = (int) ceil($total / $pageSize);
+                    if ($totalPage > 1):
+                        $blogUrl = rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/');
+                    ?>
+                    <nav class="ts-blog-pagination">
+                        <?php if ($currentPage > 1): ?>
+                        <a href="<?php echo $blogUrl . ($currentPage > 2 ? '?page=' . ($currentPage - 1) : ''); ?>" class="prev">←</a>
+                        <?php endif; ?>
+
+                        <?php for ($i = 1; $i <= $totalPage; $i++): ?>
+                        <?php if ($i == $currentPage): ?>
+                        <span class="current"><?php echo $i; ?></span>
+                        <?php else: ?>
+                        <a href="<?php echo $blogUrl . ($i > 1 ? '?page=' . $i : ''); ?>"><?php echo $i; ?></a>
+                        <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($currentPage < $totalPage): ?>
+                        <a href="<?php echo $blogUrl . '?page=' . ($currentPage + 1); ?>" class="next">→</a>
+                        <?php endif; ?>
+                    </nav>
+                    <?php endif; ?>
 
                     <?php else: ?>
                     <div class="ts-blog-empty ts-anim">

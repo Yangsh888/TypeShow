@@ -16,7 +16,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
     <?php if ($this->options->tsFavicon): ?>
     <link rel="icon" href="<?php echo htmlspecialchars($this->options->tsFavicon); ?>">
     <?php endif; ?>
-    <?php $this->header('generator=&template=&pingback=&xmlrpc=&wlw=&commentReply='); ?>
+    <?php $this->header('generator=&template=&pingback=&xmlrpc=&wlw='); ?>
     <?php if ($this->options->tsCustomHead): echo $this->options->tsCustomHead; endif; ?>
 </head>
 <body>

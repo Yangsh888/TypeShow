@@ -89,7 +89,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
                     <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     <?php _e('提交评论'); ?>
                 </button>
-                <a href="#<?php $this->respondId(); ?>" class="ts-comment-cancel" id="tsCommentCancel" style="display:none"><?php _e('取消回复'); ?></a>
+                <a href="#<?php $this->respondId(); ?>" class="ts-comment-cancel" id="cancel-comment-reply-link" style="display:none"><?php _e('取消回复'); ?></a>
             </div>
         </form>
     </div>

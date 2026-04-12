@@ -27,9 +27,7 @@ $this->need('header.php');
             </div>
         </article>
 
-        <?php if ($this->allow('comment')): ?>
         <?php $this->need('comments.php'); ?>
-        <?php endif; ?>
     </div>
 </main>
 

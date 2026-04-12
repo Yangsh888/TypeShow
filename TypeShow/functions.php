@@ -455,5 +455,3 @@ function themeConfig($form)
     );
     $form->addInput($customFooter);
 }
-
-function themeFields($layout) {}

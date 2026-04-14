@@ -1,9 +1,4 @@
 <?php
-/**
- * 博客文章列表
- *
- * @package custom
- */
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 $pageSize   = (int) $this->options->pageSize ?: 10;

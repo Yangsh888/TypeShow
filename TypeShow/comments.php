@@ -1,5 +1,6 @@
 <?php
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
+$requireUrl = isset($this->options->commentsRequireUrl) ? $this->options->commentsRequireUrl : $this->options->commentsRequireURL;
 ?>
 
 <section class="ts-comments">
@@ -73,7 +74,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
                     <input type="url" name="url" id="url" class="ts-form-input"
                            placeholder="<?php _e('您的网站（选填）'); ?>"
                            value="<?php $this->remember('url'); ?>"
-                           <?php if ($this->options->commentsRequireURL): ?>required<?php endif; ?>>
+                           <?php if ($requireUrl): ?>required<?php endif; ?>>
                 </div>
             </div>
             <?php endif; ?>

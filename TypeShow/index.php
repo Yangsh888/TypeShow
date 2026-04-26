@@ -23,7 +23,7 @@ $this->need('header.php');
         <div class="ts-hero-inner">
             <div class="ts-hero-text ts-anim">
                 <h1 class="ts-hero-title">
-                    <?php echo nl2br(htmlspecialchars($this->options->tsHeroTitle ?: '轻量高效・开箱即用<br>一款现代化 CMS 系统')); ?>
+                    <?php echo nl2br(htmlspecialchars($this->options->tsHeroTitle ?: "轻量高效・开箱即用\n一款现代化 CMS 系统")); ?>
                 </h1>
                 <p class="ts-hero-subtitle">
                     <?php echo nl2br(htmlspecialchars($this->options->tsHeroSubtitle
@@ -525,7 +525,7 @@ $this->need('header.php');
 
             <?php if ($this->options->tsNavBlog): ?>
             <div class="ts-latest-footer ts-anim">
-                <a href="<?php echo rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/'); ?>"
+                <a href="<?php echo htmlspecialchars(ts_blog_url($this), ENT_QUOTES, 'UTF-8'); ?>"
                    class="ts-btn-outline">
                     查看全部文章
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>

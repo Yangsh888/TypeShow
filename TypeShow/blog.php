@@ -1,4 +1,9 @@
 <?php
+/**
+ * 博客列表页
+ *
+ * @package custom
+ */
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
 $pageSize   = (int) $this->options->pageSize ?: 10;
@@ -81,23 +86,30 @@ $this->need('header.php');
                     $total   = $posts->getTotal();
                     $totalPage = (int) ceil($total / $pageSize);
                     if ($totalPage > 1):
-                        $blogUrl = rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/');
+                        $blogBaseUrl = ts_blog_url($this);
+                        $blogPageUrl = static function (int $page) use ($blogBaseUrl): string {
+                            if ($page <= 1) {
+                                return $blogBaseUrl;
+                            }
+
+                            return $blogBaseUrl . '?' . http_build_query(['page' => $page]);
+                        };
                     ?>
                     <nav class="ts-blog-pagination">
                         <?php if ($currentPage > 1): ?>
-                        <a href="<?php echo $blogUrl . ($currentPage > 2 ? '?page=' . ($currentPage - 1) : ''); ?>" class="prev">←</a>
+                        <a href="<?php echo htmlspecialchars($blogPageUrl($currentPage - 1), ENT_QUOTES, 'UTF-8'); ?>" class="prev">←</a>
                         <?php endif; ?>
 
                         <?php for ($i = 1; $i <= $totalPage; $i++): ?>
                         <?php if ($i == $currentPage): ?>
                         <span class="current"><?php echo $i; ?></span>
                         <?php else: ?>
-                        <a href="<?php echo $blogUrl . ($i > 1 ? '?page=' . $i : ''); ?>"><?php echo $i; ?></a>
+                        <a href="<?php echo htmlspecialchars($blogPageUrl($i), ENT_QUOTES, 'UTF-8'); ?>"><?php echo $i; ?></a>
                         <?php endif; ?>
                         <?php endfor; ?>
 
                         <?php if ($currentPage < $totalPage): ?>
-                        <a href="<?php echo $blogUrl . '?page=' . ($currentPage + 1); ?>" class="next">→</a>
+                        <a href="<?php echo htmlspecialchars($blogPageUrl($currentPage + 1), ENT_QUOTES, 'UTF-8'); ?>" class="next">→</a>
                         <?php endif; ?>
                     </nav>
                     <?php endif; ?>

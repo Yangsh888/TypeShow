@@ -1,6 +1,91 @@
 <?php
 if (!defined('__TYPECHO_ROOT_DIR__')) exit;
 
+if (!class_exists('Typecho_Widget_Helper_Form_Element_Text', false)) {
+    class_alias(\Typecho\Widget\Helper\Form\Element\Text::class, 'Typecho_Widget_Helper_Form_Element_Text');
+}
+
+if (!class_exists('Typecho_Widget_Helper_Form_Element_Textarea', false)) {
+    class_alias(\Typecho\Widget\Helper\Form\Element\Textarea::class, 'Typecho_Widget_Helper_Form_Element_Textarea');
+}
+
+function ts_sanitize_snippet(?string $value, string $allowableTags): string
+{
+    $value = trim((string) $value);
+    if ($value === '') {
+        return '';
+    }
+
+    $value = \Typecho\Common::stripTags($value, $allowableTags);
+    $value = preg_replace(
+        [
+            '#<base\b[^>]*>#is',
+            '#<script\b[^>]*>.*?</script>#is',
+            '#<iframe\b[^>]*>.*?</iframe>#is',
+            '/\s+on[a-z0-9_-]+\s*=\s*(".*?"|\'.*?\'|[^\s>]+)/iu',
+            '/javascript\s*:/iu',
+        ],
+        ['', '', '', '', ''],
+        $value
+    );
+
+    return is_string($value) ? trim($value) : '';
+}
+
+function ts_head_snippet(?string $value): string
+{
+    return ts_sanitize_snippet(
+        $value,
+        '<meta charset content http-equiv name property itemprop><link rel href type media sizes crossorigin as><style media><noscript>'
+    );
+}
+
+function ts_footer_snippet(?string $value): string
+{
+    return ts_sanitize_snippet(
+        $value,
+        '<div class><span class><p class><a href title target rel class><img src alt title width height loading decoding class><style media><noscript>'
+    );
+}
+
+function ts_blog_url($widget): string
+{
+    $slug = trim((string) ($widget->options->tsNavBlog ?? ''));
+    if ($slug === '') {
+        return (string) $widget->options->siteUrl;
+    }
+
+    static $resolved = [];
+    $cacheKey = (string) $widget->options->siteUrl . '|' . $slug;
+    if (isset($resolved[$cacheKey])) {
+        return $resolved[$cacheKey];
+    }
+
+    $normalized = trim($slug, '/');
+    if ($normalized !== '') {
+        \Widget\Contents\Page\Rows::alloc()->to($pages);
+        while ($pages->next()) {
+            if ((string) $pages->slug === $normalized) {
+                return $resolved[$cacheKey] = (string) $pages->permalink;
+            }
+        }
+    }
+
+    $routingTable = $widget->options->routingTable();
+    $archiveUrl = (string) ($routingTable['archive']['url'] ?? '/blog/');
+    return $resolved[$cacheKey] = \Typecho\Common::url(ltrim($archiveUrl, '/'), (string) $widget->options->siteUrl);
+}
+
+function ts_is_blog_active($widget): bool
+{
+    $slug = trim((string) ($widget->options->tsNavBlog ?? ''), '/');
+    if ($slug !== '' && $widget->is('page', $slug)) {
+        return true;
+    }
+
+    return $widget->is('archive') && !$widget->is('index');
+}
+
 function themeConfig($form)
 {
     $logoUrl = new Typecho_Widget_Helper_Form_Element_Text(
@@ -444,14 +529,14 @@ function themeConfig($form)
     $customHead = new Typecho_Widget_Helper_Form_Element_Textarea(
         'tsCustomHead', null, null,
         _t('自定义 head 代码'),
-        _t('插入到 &lt;/head&gt; 之前，支持 CSS / meta 等')
+        _t('插入到 &lt;/head&gt; 之前，仅保留静态 meta / link / style / noscript 标签，脚本与事件属性会被过滤')
     );
     $form->addInput($customHead);
 
     $customFooter = new Typecho_Widget_Helper_Form_Element_Textarea(
         'tsCustomFooter', null, null,
         _t('自定义 footer 代码'),
-        _t('插入到 &lt;/body&gt; 之前，支持统计脚本等')
+        _t('插入到 &lt;/body&gt; 之前，仅保留静态 HTML / 链接 / 图片 / 样式片段，脚本与事件属性会被过滤')
     );
     $form->addInput($customFooter);
 }

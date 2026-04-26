@@ -17,7 +17,12 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
     <link rel="icon" href="<?php echo htmlspecialchars($this->options->tsFavicon); ?>">
     <?php endif; ?>
     <?php $this->header('generator=&template=&pingback=&xmlrpc=&wlw='); ?>
-    <?php if ($this->options->tsCustomHead): echo $this->options->tsCustomHead; endif; ?>
+    <?php
+    $tsCustomHead = ts_head_snippet($this->options->tsCustomHead ?? '');
+    if ($tsCustomHead !== '') {
+        echo $tsCustomHead;
+    }
+    ?>
 </head>
 <body>
     <script>
@@ -54,8 +59,8 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
                        target="_blank" rel="noopener">文档</a>
                     <?php endif; ?>
                     <?php if ($this->options->tsNavBlog): ?>
-                    <a href="<?php echo rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/'); ?>"
-                       <?php if ($this->is('archive') && !$this->is('index')): ?>class="active"<?php endif; ?>>博客</a>
+                    <a href="<?php echo htmlspecialchars(ts_blog_url($this), ENT_QUOTES, 'UTF-8'); ?>"
+                       <?php if (ts_is_blog_active($this)): ?>class="active"<?php endif; ?>>博客</a>
                     <?php endif; ?>
                     <?php
                     $this->widget('Widget_Contents_Page_List')->to($navPages);
@@ -169,7 +174,11 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
         var closeBtn   = document.getElementById('tsSearchClose');
         var openBtn    = document.getElementById('tsSearchOpen');
         var searchTimer = null;
-        var siteUrl    = <?php echo json_encode(rtrim($this->options->siteUrl, '/')); ?>;
+        var siteUrl    = <?php echo \Typecho\Common::jsonEncode(
+            rtrim($this->options->siteUrl, '/'),
+            JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP,
+            '""'
+        ); ?>;
 
         function openSearch(){
             if(!overlay) return;

@@ -15,7 +15,7 @@ $this->need('header.php');
                 返回首页
             </a>
             <?php if ($this->options->tsNavBlog): ?>
-            <a href="<?php echo rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/'); ?>"
+            <a href="<?php echo htmlspecialchars(ts_blog_url($this), ENT_QUOTES, 'UTF-8'); ?>"
                class="ts-btn-secondary">浏览博客</a>
             <?php endif; ?>
         </div>

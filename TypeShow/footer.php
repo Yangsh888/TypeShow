@@ -63,7 +63,7 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
                         <a href="<?php echo htmlspecialchars($this->options->tsNavDocs); ?>" target="_blank" rel="noopener">文档中心</a>
                         <?php endif; ?>
                         <?php if ($this->options->tsNavBlog): ?>
-                        <a href="<?php echo rtrim($this->options->siteUrl, '/') . '/' . ltrim($this->options->tsNavBlog, '/'); ?>">博客文章</a>
+                        <a href="<?php echo htmlspecialchars(ts_blog_url($this), ENT_QUOTES, 'UTF-8'); ?>">博客文章</a>
                         <?php endif; ?>
                     </div>
                 </div>
@@ -107,7 +107,12 @@ if (!defined('__TYPECHO_ROOT_DIR__')) exit;
     </div>
 </footer>
 
-<?php if ($this->options->tsCustomFooter): echo $this->options->tsCustomFooter; endif; ?>
+<?php
+$tsCustomFooter = ts_footer_snippet($this->options->tsCustomFooter ?? '');
+if ($tsCustomFooter !== '') {
+    echo $tsCustomFooter;
+}
+?>
 
 <button class="ts-back-top" id="tsBackTop" aria-label="返回顶部">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="18 15 12 9 6 15"/></svg>
@@ -119,8 +124,8 @@ $ghUrl  = $this->options->tsNavGithub ? rtrim($this->options->tsNavGithub, '/') 
 $ghRepo = preg_replace('#/(releases|tree|blob|issues|pulls|discussions).*$#', '', $ghUrl);
 ?>
 var tsCommands = {
-    git:      <?php echo json_encode('git clone ' . $ghRepo . '.git .'); ?>,
-    download: <?php echo json_encode('wget ' . $ghRepo . '/releases/latest/download/TypeRenew.zip'); ?>
+    git:      <?php echo \Typecho\Common::jsonEncode('git clone ' . $ghRepo . '.git .', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP, '""'); ?>,
+    download: <?php echo \Typecho\Common::jsonEncode('wget ' . $ghRepo . '/releases/latest/download/TypeRenew.zip', JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP, '""'); ?>
 };
 (function(){
     var nav     = document.getElementById('tsNav');
